@@ -1,0 +1,40 @@
+# ROS 2 / colcon workspaces
+build/
+install/
+log/
+
+# CMake & C++ build artifacts
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+compile_commands.json
+CTestTestfile.cmake
+_deps/
+*.o
+*.obj
+*.a
+*.so
+*.dylib
+*.exe
+*.out
+
+# LLM Models & Checkpoints (never commit heavy weights)
+*.gguf
+*.bin
+*.safetensors
+models/*.gguf
+models/*.bin
+
+# Editor / IDE directories
+.vscode/
+.idea/
+.clangd/
+*.swp
+*.swo
+*~
+
+# OS artifacts
+.DS_Store
+Thumbs.db
