@@ -128,7 +128,7 @@ void test_end_to_end_command_processor() {
 
   // 1) Navigate command
   extractor.next_json_response = R"({"action":"navigate","target":"kitchen"})";
-  auto goal_res = processor.process("llévame a la cocina por favor");
+  auto goal_res = processor.process("take me to the kitchen please");
   assert(goal_res.is_ok());
   assert(goal_res.value().action == ActionType::kNavigate);
   assert(goal_res.value().waypoint_id == "kitchen");
@@ -138,14 +138,14 @@ void test_end_to_end_command_processor() {
 
   // 2) Stop command
   extractor.next_json_response = R"({"action":"stop","target":"none"})";
-  auto stop_res = processor.process("detente inmediatamente");
+  auto stop_res = processor.process("stop immediately");
   assert(stop_res.is_ok());
   assert(stop_res.value().action == ActionType::kStop);
   assert(navigator.cancel_calls == 1);
 
   // 3) Hallucinated waypoint not in registry is rejected before reaching Nav2
   extractor.next_json_response = R"({"action":"navigate","target":"rooftop"})";
-  auto bad_res = processor.process("ve a la azotea");
+  auto bad_res = processor.process("go to the rooftop");
   assert(bad_res.is_err());
   assert(bad_res.error().code == ErrorCode::kWaypointNotFound);
   assert(navigator.navigate_calls == 1);  // Unchanged

@@ -1,20 +1,36 @@
 # llm-nav2-core
 
-Nodo puente nativo en **C++** que conecta modelos de lenguaje locales ejecutados con [`llama.cpp`](https://github.com/ggml-org/llama.cpp) al stack de navegación de **ROS 2 (Nav2)**.
+Native **C++17** bridge connecting local Large Language Models powered by [`llama.cpp`](https://github.com/ggml-org/llama.cpp) to the **ROS 2 Navigation Stack (Nav2)**.
 
-## Objetivo
+## Purpose
 
-Traducir comandos en lenguaje natural a metas de navegación precisas (`nav2_msgs/action/NavigateToPose`) de forma **100% determinista**, operando íntegramente en local sobre hardware **ARM64** sin depender de APIs en la nube.
+Translate natural language commands into precise navigation goals (`nav2_msgs/action/NavigateToPose`) in a **100% deterministic** manner. By constraining LLM logit sampling token-by-token through dynamically generated **GBNF grammars**, the output is mathematically guaranteed to conform to a strict JSON schema and valid map waypoints—eliminating syntactic hallucinations and invalid spatial coordinates while running entirely offline on **ARM64** hardware.
 
-## Arquitectura Base (Enfoque Determinista)
+## Architecture (Pragmatic Hexagonal / Ports & Adapters)
 
-1. **Inferencia Local (`llama.cpp` C/C++ API):** Carga directa de modelos cuantizados (`.gguf`) en memoria con aceleración ARM NEON.
-2. **Restricción Sintáctica y Semántica (Gramáticas GBNF):** El muestreo de logits se restringe token a token mediante una gramática GBNF estricta y decodificación *greedy* (`temperature = 0`), garantizando matemáticamente una salida JSON válida y acotada a waypoints conocidos del mapa.
-3. **Resolución Espacial y Acción Nav2 (`rclcpp_action`):** El nodo C++ traduce la intención semántica validada a coordenadas exactas `(x, y, yaw)` del mapa topológico y ejecuta la meta `NavigateToPose` en Nav2.
+1. **Domain Core (`llm_nav2_domain` — Pure C++17, zero external dependencies):**
+   - [`WaypointRegistry`](include/llm_nav2_core/domain/waypoint_registry.hpp): Single source of truth mapping semantic location IDs (`kitchen`, `living_room`, etc.) from [`config/waypoints.yaml`](config/waypoints.yaml) to exact 2D planar poses `(x, y, yaw)`.
+   - [`GbnfBuilder`](include/llm_nav2_core/domain/gbnf_builder.hpp): Dynamically compiles the GBNF grammar from registered waypoints at startup so the LLM cannot generate nonexistent locations.
+   - [`NavCommandProcessor`](include/llm_nav2_core/domain/nav_command_processor.hpp): Orchestrates intent extraction, strict JSON parsing, spatial resolution, and navigation dispatch using explicit [`Result<T>`](include/llm_nav2_core/domain/result.hpp) error handling (no exceptions in control flow).
+2. **Outbound / Driven Adapters:**
+   - `LlamaCppExtractor` (`ports::IIntentExtractor`): RAII + Pimpl wrapper around `libllama` with `llama_sampler_init_grammar` + greedy decoding (`temperature = 0`).
+   - `Nav2ActionClient` (`ports::INavigator`): `rclcpp_action` client dispatching `NavigateToPose` goals to Nav2.
+3. **Inbound / Driving Adapters:**
+   - `llm_nav2_cli`: Standalone CLI runner for fast local testing and benchmarking without booting ROS 2.
+   - `llm_nav2_node`: ROS 2 node subscribing to natural language commands and driving Nav2.
 
-## Estado del Proyecto
+## Build & Run Unit Tests (Core)
 
-- [x] Inicialización del repositorio y configuración base
-- [ ] Fase 1: Core C++ determinista (`llama.cpp` + sampler GBNF standalone)
-- [ ] Fase 2: Nodo puente ROS 2 (`rclcpp` + cliente `NavigateToPose`)
-- [ ] Fase 3: Pruebas unitarias e integración continua
+```bash
+cmake -B build
+cmake --build build -j
+ctest --test-dir build --output-on-failure
+```
+
+## Roadmap
+
+- [x] Phase 0: Repository initialization and build configuration
+- [x] Phase 1a: Pure C++17 Hexagonal Domain Core, dynamic GBNF builder, and unit tests
+- [ ] Phase 1b: `llama.cpp` adapter (RAII + Pimpl) and standalone CLI runner
+- [ ] Phase 2: ROS 2 node adapter (`rclcpp` + `NavigateToPose` action client)
+- [ ] Phase 3: CI/CD pipeline (GitHub Actions)
