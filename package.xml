@@ -5,7 +5,7 @@
   <version>0.1.0</version>
   <description>Deterministic C++ bridge connecting local llama.cpp LLMs via GBNF grammars to ROS 2 Nav2.</description>
   <maintainer email="yeray@users.noreply.github.com">yeray</maintainer>
-  <license>MIT</license>
+  <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 

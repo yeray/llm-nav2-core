@@ -1,0 +1,18 @@
+llm-nav2-core
+Copyright 2026 yeray
+
+This product is licensed under the Apache License, Version 2.0.
+
+Third-Party Dependencies and Attributions:
+
+1. llama.cpp / ggml (https://github.com/ggml-org/llama.cpp)
+   Copyright (c) 2023-2024 The ggml authors
+   Licensed under the MIT License.
+
+2. ROS 2 (rclcpp, rclcpp_action, std_msgs, geometry_msgs, ament_cmake)
+   Copyright Open Source Robotics Foundation, Inc.
+   Licensed under the Apache License, Version 2.0.
+
+3. ROS 2 Navigation Stack / Nav2 (nav2_msgs)
+   Copyright Open Navigation LLC and contributors
+   Licensed under the Apache License, Version 2.0.

@@ -34,3 +34,7 @@ ctest --test-dir build --output-on-failure
 - [ ] Phase 1b: `llama.cpp` adapter (RAII + Pimpl) and standalone CLI runner
 - [ ] Phase 2: ROS 2 node adapter (`rclcpp` + `NavigateToPose` action client)
 - [ ] Phase 3: CI/CD pipeline (GitHub Actions)
+
+## License
+
+Licensed under the [Apache License, Version 2.0](LICENSE). See [NOTICE](NOTICE) for third-party attributions (`llama.cpp` under MIT, ROS 2 and Nav2 under Apache-2.0).
