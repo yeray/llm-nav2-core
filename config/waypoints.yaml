@@ -1,0 +1,23 @@
+# Single Source of Truth for semantic waypoints and their Nav2 map coordinates.
+# Angles (yaw) are in radians in the 'map' frame.
+waypoints:
+  kitchen:
+    x: 3.50
+    y: -1.20
+    yaw: 1.5708
+  living_room:
+    x: 1.00
+    y: 2.40
+    yaw: 0.0000
+  bedroom:
+    x: -2.80
+    y: 3.10
+    yaw: 3.1416
+  office:
+    x: -1.50
+    y: -2.00
+    yaw: -1.5708
+  charging_dock:
+    x: 0.00
+    y: 0.00
+    yaw: 0.0000
